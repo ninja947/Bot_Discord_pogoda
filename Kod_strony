@@ -1,0 +1,27 @@
+from flask import Flask
+
+import random
+
+app = Flask(__name__)
+
+facts_list = ["Elon Musk twierdzi, że sieci społecznościowe zostały zaprojektowane tak, aby trzymać nas na platformie, abyśmy spędzali jak najwięcej czasu na przeglądaniu treści.",
+             "Według badania przeprowadzonego w 2018 r. ponad 50% osób w wieku od 18 do 34 lat uważa, że jest zależnych od swoich smartfonów.",
+             "Sieci społecznościowe mają swoje zalety i wady, a korzystając z tych platform, powinniśmy być ich świadomi.",
+             "Badanie uzależnień technologicznych jest jednym z najważniejszych obszarów współczesnych badań naukowych."]
+
+@app.route("/")
+def hello_world():
+    return f'<p>Zobacz losowy fakt</p><br><a href="/random_fact">Zobacz losowy fakt!</a><br><a href="/ADDRESS">Pogoda</a>'
+
+
+
+@app.route("/random_fact")
+def Losowy_fakt():
+    return f'<p>{random.choice(facts_list)}</p><br><a href="/">powrót</a>'
+
+@app.route("/ADDRESS")
+def FUNCTION_NAME():
+    return f'<iframe src="https://www.meteoblue.com/pl/pogoda/widget/daily?geoloc=detect&days=7&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&precipunit=MILLIMETER&coloured=coloured&pictoicon=1&maxtemperature=1&mintemperature=1&windspeed=1&windgust=1&winddirection=1&uv=1&humidity=1&precipitation=1&precipitationprobability=1&spot=1&pressure=0&layout=light"  frameborder="0" scrolling="NO" allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox" style="width: 378px; height: 445px"></iframe><div><!-- DO NOT REMOVE THIS LINK --><a href="https://www.meteoblue.com/pl/pogoda/tydzie%C5%84/index?utm_source=daily_widget&utm_medium=linkus&utm_content=daily&utm_campaign=Weather%2BWidget" target="_blank" rel="noopener">meteoblue</a></div><br><a href="/">powrót</a>'
+
+
+app.run(debug=True)
