@@ -1,0 +1,60 @@
+import discord
+from discord.ext import commands
+from playwright.async_api import async_playwright
+import urllib.parse
+
+# Intents – pozwala botowi czytać treść wiadomości
+intents = discord.Intents.default()
+intents.message_content = True
+
+bot = commands.Bot(command_prefix='/', intents=intents)
+
+# Asynchroniczna funkcja do robienia screenshota pogody
+async def capture_weather_async(city=None, screenshot_path="pogoda.png"):
+    url_base = "https://www.meteoblue.com/pl/pogoda/widget/daily?"
+
+    if city:
+        city_encoded = urllib.parse.quote(city)
+        url_base += (
+            f"search={city_encoded}&days=7&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR"
+            "&precipunit=MILLIMETER&coloured=coloured&pictoicon=1&maxtemperature=1"
+            "&mintemperature=1&windspeed=1&windgust=1&winddirection=1&uv=1&humidity=1"
+            "&precipitation=1&precipitationprobability=1&spot=1&pressure=0&layout=light"
+        )
+    else:
+        url_base += (
+            "geoloc=detect&days=7&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR"
+            "&precipunit=MILLIMETER&coloured=coloured&pictoicon=1&maxtemperature=1"
+            "&mintemperature=1&windspeed=1&windgust=1&winddirection=1&uv=1&humidity=1"
+            "&precipitation=1&precipitationprobability=1&spot=1&pressure=0&layout=light"
+        )
+
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
+        await page.goto(url_base)
+        await page.wait_for_timeout(5000)  # Czekaj na załadowanie widgetu
+        await page.screenshot(path=screenshot_path, full_page=True)
+        await browser.close()
+
+# Komenda /pogoda
+@bot.command()
+async def pogoda(ctx, *, miasto=None):
+    await ctx.send(f"Pobieram pogodę dla: **{miasto or 'Twojej lokalizacji'}**...")
+    try:
+        await capture_weather_async(city=miasto, screenshot_path="pogoda.png")
+        await ctx.send(file=discord.File("pogoda.png"))
+    except Exception as e:
+        await ctx.send(f"Wystąpił błąd: {e}")
+
+# Połączenie z botem
+@bot.event
+async def on_ready():
+    print(f'✅ Zalogowano jako {bot.user}')
+
+
+
+
+
+
+bot.run("Tocken")
