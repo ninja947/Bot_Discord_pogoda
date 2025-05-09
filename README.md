@@ -3,5 +3,7 @@
 
 do pobrania:
 pip install -U discord.py
+
 pip install playwright
+
 playwright install
